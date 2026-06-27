@@ -22,7 +22,7 @@ exports.initializePayment = async (req, res) => {
         invoiceNumber: invoice.invoiceNumber,
         businessName: invoice.user.businessName,
       },
-      callback_url: `${process.env.CLIENT_URL}/payment/verify`,
+      callback_url: `https://invoiceng.vercel.app/payment/verify`,
     });
 
     invoice.paystackReference = reference;
