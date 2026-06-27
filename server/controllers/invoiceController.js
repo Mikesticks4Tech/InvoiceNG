@@ -93,7 +93,6 @@ exports.deleteInvoice = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-
 exports.sendInvoice = async (req, res) => {
   try {
     const invoice = await Invoice.findOneAndUpdate(
@@ -106,6 +105,9 @@ exports.sendInvoice = async (req, res) => {
 
     if (!invoice) return res.status(404).json({ message: "Invoice not found" });
 
+    const User = require("../models/User");
+    const invoiceUser = await User.findById(req.user.id);
+
     const { sendInvoiceEmail } = require("../utils/email");
     const amount = new Intl.NumberFormat("en-NG", {
       style: "currency",
@@ -114,13 +116,13 @@ exports.sendInvoice = async (req, res) => {
     const invoiceUrl = `${process.env.CLIENT_URL}/invoices/${invoice._id}`;
 
     console.log("Sending email to:", invoice.client.email);
-    console.log("Invoice URL:", invoiceUrl);
     console.log("RESEND_API_KEY exists:", !!process.env.RESEND_API_KEY);
 
     await sendInvoiceEmail({
       clientEmail: invoice.client.email,
       clientName: invoice.client.name,
-      businessName: invoice.user.businessName || invoice.user.name,
+      businessName:
+        invoiceUser?.businessName || invoiceUser?.name || "InvoiceNG",
       invoiceNumber: invoice.invoiceNumber,
       amount,
       invoiceUrl,
