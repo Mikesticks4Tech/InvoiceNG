@@ -13,6 +13,9 @@ exports.initializePayment = async (req, res) => {
 
     const reference = `inv_${invoice._id}_${Date.now()}`;
 
+    const businessName =
+      invoice.user?.businessName || invoice.user?.name || "InvoiceNG";
+
     const response = await paystackRequest.post("/transaction/initialize", {
       email: invoice.client.email,
       amount: invoice.total * 100,
@@ -20,7 +23,7 @@ exports.initializePayment = async (req, res) => {
       metadata: {
         invoiceId: invoice._id.toString(),
         invoiceNumber: invoice.invoiceNumber,
-        businessName: invoice.user.businessName || invoice.user.name,
+        businessName,
       },
       callback_url: `${process.env.CLIENT_URL}/payment/verify`,
     });
@@ -35,33 +38,6 @@ exports.initializePayment = async (req, res) => {
     });
   } catch (err) {
     console.log("Payment ERROR:", err.message);
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
-};
-
-exports.verifyPayment = async (req, res) => {
-  try {
-    const { reference } = req.params;
-
-    const response = await paystackRequest.get(
-      `/transaction/verify/${reference}`,
-    );
-    const data = response.data.data;
-
-    if (data.status !== "success") {
-      return res.status(400).json({ message: "Payment not successful" });
-    }
-
-    const invoice = await Invoice.findOne({ paystackReference: reference });
-    if (!invoice) return res.status(404).json({ message: "Invoice not found" });
-
-    invoice.status = "paid";
-    invoice.paidAt = new Date();
-    await invoice.save();
-
-    res.status(200).json({ message: "Payment successful", invoice });
-  } catch (err) {
-    console.log("Verify ERROR:", err.message);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
