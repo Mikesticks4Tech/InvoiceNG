@@ -113,6 +113,10 @@ exports.sendInvoice = async (req, res) => {
     }).format(invoice.total);
     const invoiceUrl = `${process.env.CLIENT_URL}/invoices/${invoice._id}`;
 
+    console.log("Sending email to:", invoice.client.email);
+    console.log("Invoice URL:", invoiceUrl);
+    console.log("RESEND_API_KEY exists:", !!process.env.RESEND_API_KEY);
+
     await sendInvoiceEmail({
       clientEmail: invoice.client.email,
       clientName: invoice.client.name,
@@ -122,9 +126,11 @@ exports.sendInvoice = async (req, res) => {
       invoiceUrl,
     });
 
+    console.log("Email sent successfully!");
     res.status(200).json({ message: "Invoice sent", invoice });
   } catch (err) {
     console.log("ERROR:", err.message);
+    console.log("Full error:", JSON.stringify(err));
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
