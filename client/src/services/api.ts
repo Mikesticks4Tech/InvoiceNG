@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://invoiceng.onrender.com/api/auth/register",
+  baseURL: "https://invoiceng.onrender.com/api",
 });
 
 api.interceptors.request.use((config) => {
