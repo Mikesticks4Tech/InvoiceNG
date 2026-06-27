@@ -100,10 +100,31 @@ exports.sendInvoice = async (req, res) => {
       { _id: req.params.id, user: req.user.id },
       { status: "sent" },
       { new: true },
-    ).populate("client", "name email company");
+    )
+      .populate("client", "name email company")
+      .populate("user", "name email businessName");
+
     if (!invoice) return res.status(404).json({ message: "Invoice not found" });
+
+    const { sendInvoiceEmail } = require("../utils/email");
+    const amount = new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+    }).format(invoice.total);
+    const invoiceUrl = `${process.env.CLIENT_URL}/invoices/${invoice._id}`;
+
+    await sendInvoiceEmail({
+      clientEmail: invoice.client.email,
+      clientName: invoice.client.name,
+      businessName: invoice.user.businessName || invoice.user.name,
+      invoiceNumber: invoice.invoiceNumber,
+      amount,
+      invoiceUrl,
+    });
+
     res.status(200).json({ message: "Invoice sent", invoice });
   } catch (err) {
+    console.log("ERROR:", err.message);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
