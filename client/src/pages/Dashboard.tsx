@@ -162,7 +162,7 @@ const Dashboard = () => {
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#94a3b8" }} />
               <YAxis tick={{ fontSize: 12, fill: "#94a3b8" }} />
-              <Tooltip formatter={(value: number) => formatAmount(value)} />
+              <Tooltip formatter={(value) => formatAmount(Number(value))} />
               <Bar dataKey="total" fill="#6366f1" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
