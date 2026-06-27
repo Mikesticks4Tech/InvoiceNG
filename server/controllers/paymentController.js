@@ -20,9 +20,9 @@ exports.initializePayment = async (req, res) => {
       metadata: {
         invoiceId: invoice._id.toString(),
         invoiceNumber: invoice.invoiceNumber,
-        businessName: invoice.user.businessName,
+        businessName: invoice.user.businessName || invoice.user.name,
       },
-      callback_url: `https://invoiceng.vercel.app/payment/verify`,
+      callback_url: `${process.env.CLIENT_URL}/payment/verify`,
     });
 
     invoice.paystackReference = reference;
@@ -34,6 +34,7 @@ exports.initializePayment = async (req, res) => {
       reference,
     });
   } catch (err) {
+    console.log("Payment ERROR:", err.message);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
@@ -60,6 +61,7 @@ exports.verifyPayment = async (req, res) => {
 
     res.status(200).json({ message: "Payment successful", invoice });
   } catch (err) {
+    console.log("Verify ERROR:", err.message);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
