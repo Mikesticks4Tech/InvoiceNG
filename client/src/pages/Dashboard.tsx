@@ -57,12 +57,10 @@ const Dashboard = () => {
   };
 
   const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: "NGN",
-    }).format(amount);
-  };
-
+    return new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+})
   const totalRevenue = invoices
     .filter((i) => i.status === "paid")
     .reduce((sum, i) => sum + i.total, 0);

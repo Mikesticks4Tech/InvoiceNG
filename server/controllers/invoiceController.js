@@ -109,9 +109,9 @@ exports.sendInvoice = async (req, res) => {
     const invoiceUser = await User.findById(req.user.id);
 
     const { sendInvoiceEmail } = require("../utils/email");
-    const amount = new Intl.NumberFormat("en-NG", {
+    const amount = new Intl.NumberFormat("en-US/USD", {
       style: "currency",
-      currency: "NGN",
+      currency: "USD",
     }).format(invoice.total);
     const invoiceUrl = `${process.env.CLIENT_URL}/invoices/${invoice._id}`;
 

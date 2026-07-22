@@ -93,9 +93,9 @@ const InvoiceDetail = () => {
   };
 
   const formatAmount = (amount: number) =>
-    new Intl.NumberFormat("en-NG", {
+    new Intl.NumberFormat("en-US/USD", {
       style: "currency",
-      currency: "NGN",
+      currency: "USD",
     }).format(amount);
 
   if (loading)
